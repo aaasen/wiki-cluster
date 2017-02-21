@@ -2,8 +2,11 @@
 import csv
 import numpy as np
 import random
+from collections import namedtuple
 
-random.seed(0)
+
+Cluster = namedtuple('Cluster', 'centroid, documents')
+Document = namedtuple('Document', 'label, vector')
 
 
 def load_dictionary(path):
@@ -30,7 +33,8 @@ def load_tf_idf(path, n_words):
             tf_idf_vector[int(word_index)] = tf_idf
         return tf_idf_vector
 
-    return [(title, tf_idf_vector(pairs)) for title, pairs in load_dicts(path)]
+    return [Document(title, tf_idf_vector(pairs))
+            for title, pairs in load_dicts(path)]
 
 
 dictionary = load_dictionary('dictionary.txt')
@@ -40,47 +44,69 @@ tf_idf_matrix = [vector for title, vector in tf_idf]
 n_clusters = 20
 
 
-def centroid_index(vector, centroids):
-    distances = [np.linalg.norm(np.subtract(vector, centroid))
-                 for centroid in centroids]
-    return np.argmin(distances)
+def distance(a, b):
+    return np.linalg.norm(np.subtract(a, b))
 
 
-def cluster(title_tf_idf_tuples, centroids):
-    clusters = [[] for centroid in centroids]
+def get_clusters(documents, centroids):
+    clusters = [Cluster(centroid, []) for centroid in centroids]
 
-    for title, vector in title_tf_idf_tuples:
-        clusters[centroid_index(vector, centroids)].append(title)
+    for doc in documents:
+        distances = [distance(doc.vector, centroid) for centroid in centroids]
+        cluster_index = np.argmin(distances)
+        clusters[cluster_index].documents.append(doc)
 
     return clusters
 
 
-def k_means_step(matrix, centroids):
-    clusters = [[] for centroid in centroids]
+def get_centroids(clusters):
+    def get_centroid(cluster):
+        vectors = [document.vector for document in cluster.documents]
+        return np.average(vectors, axis=0)
 
-    for row in matrix:
-        clusters[centroid_index(row, centroids)].append(row)
-
-    return np.array([np.average(cluster, axis=0) for cluster in clusters])
+    return np.array([get_centroid(cluster) for cluster in clusters])
 
 
-def k_means(matrix, n_clusters, centroids=None):
+def k_means(documents, n, centroids=None):
     if centroids is None:
-        centroids = random.sample(matrix, n_clusters)
+        random.seed(0)
+        centroids = [doc.vector for doc in random.sample(documents, n)]
 
     while True:
-        print(centroids)
         prev_centroids = centroids
-        centroids = k_means_step(matrix, centroids)
+        clusters = get_clusters(documents, centroids)
+        centroids = get_centroids(clusters)
         if np.array_equal(centroids, prev_centroids):
-            return centroids
+            return clusters
+
+
+def distortion(clusters):
+    return sum(sum(np.linalg.norm(np.subtract(doc.vector, cluster.centroid))
+                   for doc in cluster.documents)
+               for cluster in clusters)
+
+
+
+
+documents = [
+    Document('a', [1, 1]),
+    Document('b', [2, 2]),
+    Document('c', [3, 3]),
+    Document('d', [4, 4])
+]
+
+for i in range(1, 5):
+    clusters = k_means(documents, i)
+    print(i)
+    print(distortion(clusters))
+
 
 
 # centroids = k_means(tf_idf_matrix, 20)
 # np.save('centroids', centroids)
-centroids = np.load('centroids.npy')
-clusters = cluster(tf_idf, centroids)
-print(clusters)
+# centroids = np.load('centroids.npy')
+# clusters = cluster(tf_idf, centroids)
+# print(clusters)
 
 # clusters = load_dicts('cluster0.txt')
 # np.set_printoptions(threshold=np.nan)
