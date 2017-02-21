@@ -2,6 +2,7 @@
 import csv
 import numpy as np
 import random
+import pickle
 from collections import namedtuple
 
 
@@ -26,7 +27,7 @@ def load_dicts(path):
         return [pair(row) for row in f.readlines()]
 
 
-def load_tf_idf(path, n_words):
+def load_documents(path, n_words):
     def tf_idf_vector(tf_idf_pairs):
         tf_idf_vector = np.zeros(n_words)
         for word_index, tf_idf in tf_idf_pairs:
@@ -35,13 +36,6 @@ def load_tf_idf(path, n_words):
 
     return [Document(title, tf_idf_vector(pairs))
             for title, pairs in load_dicts(path)]
-
-
-dictionary = load_dictionary('dictionary.txt')
-tf_idf = load_tf_idf('tfidf.txt', len(dictionary))
-tf_idf_matrix = [vector for title, vector in tf_idf]
-
-n_clusters = 20
 
 
 def distance(a, b):
@@ -80,26 +74,29 @@ def k_means(documents, n, centroids=None):
             return clusters
 
 
+def load_k_means(title, document_path, dictionary_path, n):
+    path = '{}_{}.pickle'.format(title, n)
+    try:
+        with open(path, 'rb') as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        dictionary = load_dictionary(dictionary_path)
+        documents = load_documents(document_path, len(dictionary))
+        clusters = k_means(documents, n)
+        with open(path, 'wb') as f:
+            pickle.dump(clusters, f)
+        return clusters
+
+
 def distortion(clusters):
     return sum(sum(np.linalg.norm(np.subtract(doc.vector, cluster.centroid))
                    for doc in cluster.documents)
                for cluster in clusters)
 
 
-
-
-documents = [
-    Document('a', [1, 1]),
-    Document('b', [2, 2]),
-    Document('c', [3, 3]),
-    Document('d', [4, 4])
-]
-
-for i in range(1, 5):
-    clusters = k_means(documents, i)
-    print(i)
-    print(distortion(clusters))
-
+clusters = load_k_means('test_cluster', '20_docs.txt', 'dictionary.txt', 3)
+print(clusters)
+print(distortion(clusters))
 
 
 # centroids = k_means(tf_idf_matrix, 20)
