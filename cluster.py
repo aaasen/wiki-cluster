@@ -164,27 +164,29 @@ def plot_k_vs_distortion():
     plt.ylabel('Total Distortion')
     plt.tight_layout()
     plt.savefig('k_vs_distortion.png')
+    plt.show()
 
 
 def plot_k_vs_cluster_size():
     ks = [2 ** n for n in range(9)]
     lens = [[len(cluster) for cluster in load_k_means(k)] for k in ks]
+    print(lens[4])
 
-    def plot_percentile(percentile):
-        plt.plot(ks, [np.percentile(n, percentile) for n in lens],
-                 label='percentile {}'.format(percentile))
+    def plot_stat(func):
+        plt.plot(ks, list(map(getattr(np, func), lens)), label=func)
 
-    for i in range(0, 101, 25):
-        plot_percentile(i)
+    plot_stat('min')
+    plot_stat('median')
+    plot_stat('max')
 
     plt.legend()
-    plt.title('K vs. Median Cluster Size')
+    plt.title('K vs. Cluster Size')
     plt.xlabel('K')
-    plt.ylabel('Median Cluster Size')
+    plt.ylabel('Cluster Size')
     plt.yscale('log', basey=2)
     plt.xscale('log', basex=2)
     plt.tight_layout()
-    plt.savefig('k_vs_median_cluster_size.png')
+    plt.savefig('k_vs_cluster_size.png')
     plt.show()
 
 
@@ -209,7 +211,7 @@ def lda():
 # mds('train1000')
 
 
-plot_k_vs_cluster_size()
+plot_k_vs_distortion()
 
 # centroids = k_means(tf_idf_matrix, 20)
 # np.save('centroids', centroids)
