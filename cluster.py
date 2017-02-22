@@ -1,13 +1,47 @@
 
-import csv
 import numpy as np
+from matplotlib import pyplot
+from sklearn.manifold import MDS
+
+import csv
 import random
 import pickle
 from collections import namedtuple
 
 
-Cluster = namedtuple('Cluster', 'centroid, documents')
+# This seed is used for all random number generators
+# so that results are reproducible.
+SEED = 0
+
+
 Document = namedtuple('Document', 'label, vector')
+
+
+def distance(a, b):
+    return np.linalg.norm(np.subtract(a, b))
+
+
+class Cluster(namedtuple('Cluster', 'centroid, documents')):
+    def top_words(self, dictionary):
+        indexes = sorted(range(len(self.centroid)),
+                         key=lambda i: -self.centroid[i])
+        return [dictionary[i] for i in indexes]
+
+    def distance_to_center(self, document):
+        return distance(document.vector, self.centroid)
+
+    def top_documents(self):
+        def distance_to_center(document):
+            return distance(document.vector, self.centroid)
+
+        return sorted(self.documents, key=distance_to_center)
+
+    def distortion(self):
+        return sum(self.distance_to_center(doc) for doc in self.documents)
+
+    def calculate_centroid(self):
+        vectors = [document.vector for document in self.documents]
+        return np.average(vectors, axis=0)
 
 
 def load_dictionary(path):
@@ -38,8 +72,8 @@ def load_documents(path, n_words):
             for title, pairs in load_dicts(path)]
 
 
-def distance(a, b):
-    return np.linalg.norm(np.subtract(a, b))
+def distortion(clusters):
+    return sum(cluster.distortion() for cluster in clusters)
 
 
 def get_clusters(documents, centroids):
@@ -54,28 +88,27 @@ def get_clusters(documents, centroids):
 
 
 def get_centroids(clusters):
-    def get_centroid(cluster):
-        vectors = [document.vector for document in cluster.documents]
-        return np.average(vectors, axis=0)
-
-    return np.array([get_centroid(cluster) for cluster in clusters])
+    return np.array([cluster.calculate_centroid() for cluster in clusters])
 
 
 def k_means(documents, n, centroids=None):
     if centroids is None:
-        random.seed(0)
+        random.seed(SEED)
         centroids = [doc.vector for doc in random.sample(documents, n)]
 
+    print(n)
     while True:
         prev_centroids = centroids
         clusters = get_clusters(documents, centroids)
         centroids = get_centroids(clusters)
+        print('.', end='', flush=True)
         if np.array_equal(centroids, prev_centroids):
+            print()
             return clusters
 
 
-def load_k_means(title, document_path, dictionary_path, n):
-    path = '{}_{}.pickle'.format(title, n)
+def load_k_means(document_path, dictionary_path, n):
+    path = '{}_{}.pickle'.format(document_path, n)
     try:
         with open(path, 'rb') as f:
             return pickle.load(f)
@@ -88,16 +121,49 @@ def load_k_means(title, document_path, dictionary_path, n):
         return clusters
 
 
-def distortion(clusters):
-    return sum(sum(np.linalg.norm(np.subtract(doc.vector, cluster.centroid))
-                   for doc in cluster.documents)
-               for cluster in clusters)
+def distortions(document_path, dictionary_path, ns):
+    return [distortion(load_k_means(document_path, dictionary_path, n))
+            for n in ns]
 
 
-clusters = load_k_means('test_cluster', '20_docs.txt', 'dictionary.txt', 3)
-print(clusters)
-print(distortion(clusters))
+def similarity_matrix(vectors):
+    return [[distance(vectors[i], vectors[j])
+             for i in range(len(vectors))]
+            for j in range(len(vectors))]
 
+
+def a():
+    dictionary = load_dictionary('dictionary')
+    clusters = load_k_means('train', 'dictionary', 16)
+
+    for cluster in clusters:
+        print('cluster')
+        print(len(cluster.documents))
+        print(cluster.top_words(dictionary)[:5])
+        print([document.label for document in cluster.top_documents()[:5]])
+        print('\n')
+
+
+def b():
+    x = [2 ** n for n in range(10)]
+    y = distortions('train', 'dictionary', x)
+    pyplot.plot(x, y)
+    pyplot.xscale('log')
+    pyplot.show()
+
+
+def mds():
+    dictionary = load_dictionary('dictionary')
+    documents = load_documents('train', len(dictionary))
+    random.seed(SEED)
+    sample = np.array([doc.vector for doc in random.sample(documents, 1000)])
+    mds = MDS(n_components=2, random_state=SEED)
+    points = mds.fit_transform(sample)
+    pyplot.plot(points[:, 0], points[:, 1], linestyle='', marker='o')
+    pyplot.show()
+
+
+c()
 
 # centroids = k_means(tf_idf_matrix, 20)
 # np.save('centroids', centroids)
