@@ -4,10 +4,12 @@ import numpy as np
 from collections import namedtuple
 
 from distance import distance
+import load
 
 
 class Cluster(namedtuple('Cluster', 'centroid, documents')):
-    def top_words(self, dictionary):
+    def top_words(self):
+        dictionary = load.load_dictionary()
         indexes = sorted(range(len(self.centroid)),
                          key=lambda i: -self.centroid[i])
         return [dictionary[i] for i in indexes]
