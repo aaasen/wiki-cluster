@@ -12,14 +12,20 @@ clusters.sort(key=lambda cluster: -len(cluster))
 
 
 def print_row(cells):
-    print('&'.join(str(cell) for cell in cells), end=' \\\\\n')
+    print(' & '.join(str(cell) for cell in cells), end=' \\\\ \\hline \n')
+
+
+def parbox(strings, width):
+    return '\\parbox[t]{{{}}}{{{}}}'.format(width, ' \\\\ '.join(strings))
 
 
 for i in range(len(clusters)):
     cluster = clusters[i]
 
-    print_row([
-        len(cluster),
-        ', '.join(cluster.top_words()[:5]),
-        ', '.join([doc.label for doc in cluster.top_documents()[:5]])
-    ])
+    if len(cluster) >= 10:
+        print_row([
+            i,
+            len(cluster),
+            parbox(cluster.top_words()[:5], '2cm'),
+            parbox([doc.label for doc in cluster.top_documents()[:5]], '8cm')
+        ])

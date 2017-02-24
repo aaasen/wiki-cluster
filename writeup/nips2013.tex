@@ -91,24 +91,37 @@ In a perfect dataset with $n$ documents and $K$ clusters, we would expect each c
 \caption{$K$ versus minimum, median, and maximum cluster size for $K \in \{1,2,4,...,256\}$ with a $log_{2}$ scale on both axes.}
 \end{figure}
 
-\subsection{Tables}
+\subsection{Exploring Clusters}
 
-All tables must be centered, neat, clean and legible. Do not use hand-drawn
-tables. The table number and title always appear before the table. See
-Table~\ref{sample-table}.
+Table 1 shows the clusters with at least 10 documents for K-Means clustering with $K=16$. The words in each cluster are the dimensions of the centroid with the largest magnitude. The documents shown are those that are closest to the centroid of the cluster.
 
-Place one line space before the table title, one line space after the table
-title, and one line space after the table. The table title must be lower case
-(except for first word and proper nouns); tables are numbered consecutively.
+Overall, the generated clusters make sense, but there are some points of confusion:
+
+\begin{itemize}
+\item The words that make up cluster 0 have little relation to each other. This cluster contains the majority of the documents.
+\item Cluster 1 contains churches as well as colleges.
+\item Cluster 3 contains documents related to TV shows and sports because both contain the word "season."
+\end{itemize}
 
 \begin{table}[t]
-\caption{Sample table title}
+\caption{K-Means clusters with $K=16$ and at least 10 documents.}
 \label{sample-table}
 \begin{center}
-\begin{tabular}{ll}
-\multicolumn{1}{c}{\bf CLUSTER}  &\multicolumn{1}{c}{\bf SIZE}
-\\ \hline \\
+    \begin{tabular}{ | c | c | c | c |}
+    \hline
+    \textbf{Cluster} & \textbf{Size} & \textbf{Words} & \textbf{Documents} \\ \hline
+    
+0 & 10061 & \parbox[t]{2cm}{females \\ station \\ family \\ located \\ north} & \parbox[t]{8cm}{mcgillpainquestionnaire \\ historyofthefamily \\ thetussaudsgroup \\ nadiraactress \\ mansfieldsummithighschool} \\ \hline 
+1 & 3013 & \parbox[t]{2cm}{church \\ college \\ students \\ published \\ institute} & \parbox[t]{8cm}{edmondscommunitycollege \\ helderbergcollege \\ oberlincongregationalchurch \\ lundbyoldchurch \\ dioceseoflimerickandkillaloe} \\ \hline 
+2 & 1128 & \parbox[t]{2cm}{party \\ served \\ general \\ member \\ senate} & \parbox[t]{8cm}{partyidentification \\ labourfarmerparty \\ democraticalliancesouthafrica \\ liberaldemocratsitaly \\ christiancreditparty} \\ \hline 
+3 & 909 & \parbox[t]{2cm}{season \\ club \\ playing \\ seasons \\ player} & \parbox[t]{8cm}{dancingwiththestars \\ davidmccracken \\ gilbertcurgenven \\ bjsamsamericanfootball \\ livingstonewalker} \\ \hline 
+4 & 707 & \parbox[t]{2cm}{album \\ released \\ songs \\ records \\ rock} & \parbox[t]{8cm}{thegreatestdaytakethatalbum \\ conflictingemotions \\ primalscream \\ leftbacklp \\ elisamartin} \\ \hline 
+5 & 30 & \parbox[t]{2cm}{nba \\ basketball \\ points \\ season \\ seasons} & \parbox[t]{8cm}{kcjones \\ hakeemolajuwon \\ albertkingbasketball \\ ballstatecardinalsmensbasketball \\ 201011southfloridabullsmensbasketballteam} \\ \hline 
+6 & 23 & \parbox[t]{2cm}{riots \\ police \\ murder \\ captured \\ robbery} & \parbox[t]{8cm}{sowetouprising \\ 1992losangelesriots \\ nikolaybogolepov \\ josephlamothe \\ jenmi} \\ \hline 
+7 & 13 & \parbox[t]{2cm}{congo \\ subtropical \\ republic \\ zambia \\ zimbabwe} & \parbox[t]{8cm}{republicofcabinda \\ brownrumpedbunting \\ copperbeltprovince \\ leptopelisviridis \\ yellowthroatedpetronia} \\ \hline 
+ 
 
+ 
 \end{tabular}
 \end{center}
 \end{table}
