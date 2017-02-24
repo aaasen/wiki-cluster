@@ -43,7 +43,7 @@ Clustering Wikipedia articles using unsupervised learning techniques including K
 
 \section{Dataset}
 
-The provided dataset contains 15,903 Wikipedia articles in tf-idf format. There are 10,574 unique words in this dataset. Each document is represented as a sparse vector with one dimension for each word. I have not experimented with dimensionality reduction yet, but it could be an interesting topic to explore.
+The provided dataset contains 15,903 Wikipedia articles in tf-idf format. There are 10,574 unique words in this dataset. Each document is represented as a sparse vector with one dimension for each word.
 
 \section{K-Means Clustering}
 
@@ -57,12 +57,13 @@ Given $K$ clusters $C_{1},C_{2},...,C_{K}$ where each cluster is a set of docume
 
 $$\sum_{i=1}^{K}\sum_{d \in C_{i}} ||d - \mu_{i}||^{2}$$
 
-To minimize the distortion, we could set $K$ equal to the number of documents, but then the clusters would be meaningless. We want to choose a K with low distortion that also results in interpretable clusters. Figure 1 shows a plot of K versus total distortion. When $1 \leq K \leq 16$, adding additional clusters has a large impact on the distortion. However, once $K > 16$, adding additional clusters has little impact on the distortion. From this alone, it makes sense to set $K=16$ since it provides a good balance of distortion and interpretability.
+To minimize the distortion, we could set $K$ equal to the number of documents, but then the clusters would be meaningless. We want to choose a $K$ with low distortion that also results in interpretable clusters. Figure 1 shows a plot of $K$ versus total distortion. When $1 \leq K \leq 16$, adding additional clusters has a large impact on the distortion, but once $K > 16$, adding additional clusters has little impact on the distortion. From this alone, it makes sense to set $K=16$ since it provides a good balance of distortion and interpretability.
 
+\clearpage
 
 \begin{figure}[h]
 \begin{center}
-\framebox{\includegraphics[scale=0.5]{k_vs_distortion}}
+\framebox{\includegraphics[scale=0.4]{k_vs_distortion}}
 \end{center}
 \caption{$K$ versus total distortion for $K \in \{1,2,4,...,256\}$}
 \end{figure}
@@ -73,20 +74,11 @@ As $K$ increases, the clusters become more sparse. Once $K=256$, over half of th
 
 $$[10061, 3013, 1128, 909, 707, 30, 23, 13, 4, 4, 3, 2, 2, 2, 1, 1]$$
 
-Over half of the clusters are very small, and one of the clusters is too large to be interpretable. This indicates that the data has significant outliers and lacks a structure conducive to clustering.
-
-
-
-
-
-
-
-
-In a perfect dataset with $n$ documents and $K$ clusters, we would expect each cluster to have exactly $K/n$ documents.
+Over half of the clusters are very small, and one of the clusters is too large to be interpretable. This indicates that the data has significant outliers and may lack a structure conducive to clustering.
 
 \begin{figure}[h]
 \begin{center}
-\framebox{\includegraphics[scale=0.5]{k_vs_cluster_size}}
+\framebox{\includegraphics[scale=0.4]{k_vs_cluster_size}}
 \end{center}
 \caption{$K$ versus minimum, median, and maximum cluster size for $K \in \{1,2,4,...,256\}$ with a $log_{2}$ scale on both axes.}
 \end{figure}
@@ -102,6 +94,22 @@ Overall, the generated clusters make sense, but there are some points of confusi
 \item Cluster 1 contains churches as well as colleges.
 \item Cluster 3 contains documents related to TV shows and sports because both contain the word "season."
 \end{itemize}
+
+\section{Next Steps}
+
+\subsection{Recursive K-Means}
+
+One of the largest issues with applying K-Means to this dataset is that it produces clusters with huge size variations. Some clusters contain 10,000 documents, whereas others contain only one. Recursively applying K-means to large clusters could address this problem and even produce a sort of hierarchical clustering.
+
+\subsection{Latent Dirichlet Allocation}
+
+Some of the clusters contain documents that refer to difference meanings of the same word. For example, "season" could refer to a football season or a TV show season. I would like to explore Latent Dirichlet Allocation and whether or not it could help with this situation.
+
+
+
+
+
+
 
 \begin{table}[t]
 \caption{K-Means clusters with $K=16$ and at least 10 documents.}

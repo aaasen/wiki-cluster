@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  23 FEB 2017 17:17
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  23 FEB 2017 18:50
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -258,52 +258,50 @@ File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 39.
- <images/k_vs_distortion.png, id=28, 462.528pt x 346.896pt>
+ [1
+
+{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] <images/k_vs_distortion.png, id=56, 462.528pt x 346.896pt>
 File: images/k_vs_distortion.png Graphic file (type png)
  <use images/k_vs_distortion.png>
-Package pdftex.def Info: images/k_vs_distortion.png used on input line 65.
-(pdftex.def)             Requested size: 231.26343pt x 173.44757pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[1
-
-{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] <images/k_vs_cluster_size.png, id=46, 462.528pt x 346.896pt>
+Package pdftex.def Info: images/k_vs_distortion.png used on input line 66.
+(pdftex.def)             Requested size: 185.0079pt x 138.75594pt.
+ <images/k_vs_cluster_size.png, id=58, 462.528pt x 346.896pt>
 File: images/k_vs_cluster_size.png Graphic file (type png)
  <use images/k_vs_cluster_size.png>
-Package pdftex.def Info: images/k_vs_cluster_size.png used on input line 89.
-(pdftex.def)             Requested size: 231.26343pt x 173.44757pt.
-LaTeX Font Info:    Try loading font information for OMS+ptm on input line 101.
+Package pdftex.def Info: images/k_vs_cluster_size.png used on input line 81.
+(pdftex.def)             Requested size: 185.0079pt x 138.75594pt.
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 93.
  (/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/omsptm.fd
 File: omsptm.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 101.
- [2 <./images/k_vs_distortion.png> <./images/k_vs_cluster_size.png>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 130.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 93.
+ [2
+
+ <./images/k_vs_distortion.png> <./images/k_vs_cluster_size.png>]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 138.
  [3]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 130.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 138.
  (/Users/laneaasen/dev/wiki-cluster/writeup/.texpadtmp/nips2013.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 130.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 130.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 138.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 138.
 Package rerunfilecheck Info: File `nips2013.out' has not changed.
 (rerunfilecheck)             Checksum: <no file>.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 130.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 138.
  ) 
 Here is how much of TeX's memory you used:
- 5736 strings out of 493089
- 85052 string characters out of 6134842
- 172914 words of memory out of 5000000
- 9160 multiletter control sequences out of 15000+600000
+ 5742 strings out of 493089
+ 85132 string characters out of 6134842
+ 173917 words of memory out of 5000000
+ 9163 multiletter control sequences out of 15000+600000
  12183 words of font info for 27 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 37i,10n,39p,569b,376s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 37i,10n,39p,568b,324s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
-Output written on /Users/laneaasen/dev/wiki-cluster/writeup/.texpadtmp/nips2013.pdf (3 pages, 153259 bytes).
+Output written on /Users/laneaasen/dev/wiki-cluster/writeup/.texpadtmp/nips2013.pdf (3 pages, 154076 bytes).
 PDF statistics:
- 102 PDF objects out of 1000 (max. 8388607)
- 81 compressed objects within 1 object stream
- 13 named destinations out of 1000 (max. 500000)
- 59 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 114 PDF objects out of 1000 (max. 8388607)
+ 93 compressed objects within 1 object stream
+ 16 named destinations out of 1000 (max. 500000)
+ 83 words of extra memory for PDF output out of 10000 (max. 10000000)
 

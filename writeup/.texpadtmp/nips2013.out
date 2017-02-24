@@ -4,3 +4,6 @@
 \BOOKMARK [3][-]{subsubsection.2.1.1}{Minimizing Distortion}{subsection.2.1}% 4
 \BOOKMARK [2][-]{subsection.2.2}{K and Cluster Size}{section.2}% 5
 \BOOKMARK [2][-]{subsection.2.3}{Exploring Clusters}{section.2}% 6
+\BOOKMARK [1][-]{section.3}{Next Steps}{}% 7
+\BOOKMARK [2][-]{subsection.3.1}{Recursive K-Means}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.2}{Latent Dirichlet Allocation}{section.3}% 9
