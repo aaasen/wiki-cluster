@@ -22,10 +22,56 @@ def _get_centroids(clusters):
     return np.array([cluster.calculate_centroid() for cluster in clusters])
 
 
-def cluster(k, documents, centroids=None):
+def _normalize(array):
+    return np.array(array) / sum(array)
+
+
+def _sample(array):
+    array = _normalize(array)
+    array = array.cumsum()
+    n = random.random()
+    for i in range(len(array)):
+        if array[i] >= n:
+            return i
+
+
+def k_means_plus_plus(k, documents):
+    """
+    K-means++ is a method of initializing cluster centroids.
+    The algorithm works as follows (Wikipedia):
+     1. Choose one center uniformly at random from among the data points.
+     2. For each data point x, compute D(x), the distance between x and
+        the nearest center that has already been chosen.
+     3. Choose one new data point at random as a new center, using a weighted
+        probability distribution where a point x is chosen with probability
+        proportional to D(x)2.
+     4. Repeat Steps 2 and 3 until k centers have been chosen.
+    """
+
+    init_centroid_index = random.randint(0, len(documents) - 1)
+    centroid_indexes = {init_centroid_index}
+    centroids = [documents[init_centroid_index].vector]
+
+    while len(centroids) < k:
+        clusters = _get_clusters(documents, centroids)
+        distances = [(doc.vector, cluster.distance_to_center(doc) ** 2)
+                     for cluster in clusters
+                     for doc in cluster.documents]
+        centroid_index = _sample([distance[1] for distance in distances])
+        if centroid_index not in centroid_indexes:
+            centroid_indexes.add(centroid_index)
+            centroids.append(distances[centroid_index][0])
+
+    return centroids
+
+
+def random_documents(k, documents):
+    return [doc.vector for doc in random.sample(documents, k)]
+
+
+def cluster(k, documents, centroids=None, init=k_means_plus_plus):
     if centroids is None:
-        random.seed(SEED)
-        centroids = [doc.vector for doc in random.sample(documents, k)]
+        centroids = init(k, documents)
 
     print(k)
     while True:
