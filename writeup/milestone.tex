@@ -95,6 +95,81 @@ Overall, the generated clusters make sense, but there are some points of confusi
 \item Cluster 3 contains documents related to TV shows and sports because both contain the word "season."
 \end{itemize}
 
+\subsection{K-Means++}
+
+K-Means++ is a method for selecting initial cluster centers for K-Means. In the normal version of K-Means, initial cluster centroids are selected by sampling random documents from the dataset. This can produce suboptimal clusters, increase time to convergence, and increase variability in clustering performance. K-Means solves this by selecting initial centroids one at a time to minimize distortion.
+
+I implemented K-Means++ and expected it to increase clustering performance considerably. However, I found that it actually had a slightly negative impact on distortion and noticeably increased cluster sparsity. 
+
+\begin{figure}[h]
+\begin{center}
+\framebox{\includegraphics[scale=0.4]{k_vs_distortion_++}}
+\end{center}
+\caption{$K$ versus total distortion for $K \in \{1,2,4,...,64\}$ using K-Means++.}
+\end{figure}
+
+
+\begin{figure}[h]
+\begin{center}
+\framebox{\includegraphics[scale=0.4]{k_vs_cluster_size_++}}
+\end{center}
+\caption{$K$ versus minimum, median, and maximum cluster size for $K \in \{1,2,4,...,64\}$ with a $log_{2}$ scale on both axes. Using K-Means++.}
+\end{figure}
+
+\subsection{Fighting Cluster Sparsity}
+
+After implementing K-Means++ with no success, it became apparent that there was a problem with the underlying data, and not with the clustering algorithm. 
+
+I began to investigate the provided dataset, which was in tf-idf format with no documentation. I found that stop words had been removed from the dataset, but rare words had been left in. Half of the words in the dictionary were used in 16 or fewer datasets (less than 0.1\%). This was the obvious cause of cluster sparsity in the dataset. 
+
+
+
+\begin{table}[t]
+\caption{10 least common words with the number and percentage of documents that they appear in.}
+\label{least-common-words-table}
+\begin{center}
+    \begin{tabular}{ | c | c | c |}
+    \hline
+    \textbf{Word} & \textbf{Documents} & \textbf{Percentage of Documents} \\ \hline
+
+frazioni & 0 & 0.0\% \\ \hline 
+threeletter & 1 & 0.0062881\% \\ \hline 
+budjovice & 1 & 0.0062881\% \\ \hline 
+gmina & 1 & 0.0062881\% \\ \hline 
+ortsgemeinden & 1 & 0.0062881\% \\ \hline 
+headwater & 2 & 0.012576\% \\ \hline 
+baronetage & 3 & 0.018864\% \\ \hline 
+breaststroke & 3 & 0.018864\% \\ \hline 
+voronezh & 3 & 0.018864\% \\ \hline 
+rosettes & 3 & 0.018864\% \\ \hline 
+
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[t]
+\caption{10 most common words with the number and percentage of documents that they appear in.}
+\label{most-common-words-table}
+\begin{center}
+    \begin{tabular}{ | c | c | c |}
+    \hline
+    \textbf{Word} & \textbf{Documents} & \textbf{Percentage of Documents} \\ \hline
+
+well & 4009 & 25.209\% \\ \hline 
+second & 3538 & 22.247\% \\ \hline 
+high & 2836 & 17.833\% \\ \hline 
+family & 2579 & 16.217\% \\ \hline 
+group & 2412 & 15.167\% \\ \hline 
+north & 2364 & 14.865\% \\ \hline 
+major & 2298 & 14.45\% \\ \hline 
+large & 2227 & 14.004\% \\ \hline 
+general & 2187 & 13.752\% \\ \hline 
+long & 2164 & 13.607\% \\ \hline 
+
+\end{tabular}
+\end{center}
+\end{table}
+
 \section{Next Steps}
 
 \subsection{Recursive K-Means}
@@ -107,7 +182,7 @@ Some of the clusters contain documents that refer to difference meanings of the 
 
 \begin{table}[t]
 \caption{K-Means clusters with $K=16$ and at least 10 documents.}
-\label{sample-table}
+\label{cluster-table}
 \begin{center}
     \begin{tabular}{ | c | c | c | c |}
     \hline

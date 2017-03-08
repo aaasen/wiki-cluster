@@ -24,7 +24,7 @@ class Cluster(namedtuple('Cluster', 'centroid, documents')):
         return sorted(self.documents, key=distance_to_center)
 
     def distortion(self):
-        return sum(self.distance_to_center(doc) for doc in self.documents)
+        return sum(self.distance_to_center(doc) ** 2 for doc in self.documents)
 
     def calculate_centroid(self):
         vectors = [document.vector for document in self.documents]
