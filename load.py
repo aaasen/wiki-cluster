@@ -68,7 +68,7 @@ def load_document_matrix(path=DOCUMENT_PATH, dictionary_path=DICTIONARY_PATH):
 
 
 def load_k_means(k, document_path=DOCUMENT_PATH):
-    path = '{}_{}_++.pickle'.format(document_path, k)
+    path = '{}_{}.pickle'.format(document_path, k)
     try:
         with open(path, 'rb') as f:
             print('loading cached clusters from {}'.format(path))
