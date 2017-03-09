@@ -168,6 +168,30 @@ long & 2164 & 13.607\% \\ \hline
 \end{center}
 \end{table}
 
+\subsection{Effect of Seed on Distortion}
+
+After observing some variability in my plots of K vs Distortion, I decided to investigate the effect of random seeds on distortion.
+
+I found that the choice of seed can have a large impact on cluster quality and distortion. Because of this, it is very important to run K-Means with at least a few different seeds and select the best one. I opted to not do this in the above experiments because it would have been too computationally expensive, but I will try many different seeds when generating the final clusters.
+
+\begin{figure}[h]
+\begin{center}
+\framebox{\includegraphics[scale=0.4]{different_init}}
+\end{center}
+\caption{Distortion using K-Means++ on 100 training documents with different random seeds.}
+\end{figure}
+
+
+\begin{figure}[h]
+\begin{center}
+\framebox{\includegraphics[scale=0.4]{k_vs_cluster_size_++}}
+\end{center}
+\caption{$K$ versus minimum, median, and maximum cluster size for $K \in \{1,2,4,...,64\}$ with a $log_{2}$ scale on both axes. Using K-Means++.}
+\end{figure}
+
+
+
+
 \section{Next Steps}
 
 \subsection{Recursive K-Means}
