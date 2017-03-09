@@ -25,9 +25,29 @@ def load_dicts(path):
         return [pair(row) for row in f.readlines()]
 
 
-def load_documents(path=DOCUMENT_PATH, dictionary_path=DICTIONARY_PATH):
+def write_documents(docs, path):
+    def format_tuples(tuples):
+        return ','.join('{}:{}'.format(key, value) for key, value in tuples)
+
+    def format_row(title, tuples):
+        return '{}|{}\n'.format(title, format_tuples(tuples))
+
+    def format_doc(doc):
+        title = doc.label
+        tuples = ((i, x) for i, x in enumerate(doc.vector) if x != 0)
+        return format_row(title, tuples)
+
+    with open(path, 'w') as f:
+        f.writelines(format_doc(doc) for doc in docs)
+
+
+def load_documents(path=DOCUMENT_PATH, dictionary_path=DICTIONARY_PATH,
+                   dictionary=None):
     # Could speed this up since we only need to know how many words exist.
-    n_words = len(load_dictionary(dictionary_path))
+    if dictionary is None:
+        dictionary = load_dictionary(dictionary_path)
+
+    n_words = len(dictionary)
 
     def tf_idf_vector(tf_idf_pairs):
         tf_idf_vector = np.zeros(n_words)
@@ -48,7 +68,7 @@ def load_document_matrix(path=DOCUMENT_PATH, dictionary_path=DICTIONARY_PATH):
 
 
 def load_k_means(k, document_path=DOCUMENT_PATH):
-    path = '{}_{}.pickle'.format(document_path, k)
+    path = '{}_{}_++.pickle'.format(document_path, k)
     try:
         with open(path, 'rb') as f:
             print('loading cached clusters from {}'.format(path))
