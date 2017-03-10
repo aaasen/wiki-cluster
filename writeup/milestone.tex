@@ -38,7 +38,7 @@ Seattle, WA 98105\\
 \maketitle
 
 \begin{abstract}
-Clustering Wikipedia articles using unsupervised learning techniques including K-Means and Latent Dirichlet Allocation (LDA). Exploration into K-Means including choice of K, K-Means++, the effect of random seeds, and TF-IDF thresholds.
+Clustering Wikipedia articles using K-Means. Exploration into K-Means including choice of K, K-Means++, the effect of random seeds, and tf-idf thresholds.
 \end{abstract}
 
 
@@ -239,7 +239,7 @@ There is no correct way to choose a tf-idf threshold. I ended up choosing to get
 
 After observing some unexpected variability in my results, I decided to investigate the effect of random seeds on distortion.
 
-I found that the choice of seed can have a large impact on cluster quality and distortion. Because of this, it is very important to run K-Means with at least a few different seeds and select the best one. I opted to not do this in the above experiments because it would have been too computationally expensive, but I will try many different seeds when generating the final clusters.
+I found that the choice of seed can have a large impact on cluster quality and distortion. Because of this, it is very important to run K-Means with at least a few different seeds and select the best one. While this can be too computationally expensive to do when running experiments, it is important to do when generating the final clusters.
 
 \begin{figure}[h]
 \begin{center}
@@ -250,32 +250,61 @@ I found that the choice of seed can have a large impact on cluster quality and d
 
 \section{Conclusion}
 
-Table 5 shows the final clusters. While 64 clusters were generated, only the largest 10 are shown. These clusters with words that occurred in at least 16 documents, which is about half of all words. K-Means++ was used to generate the initial cluster centroids. Names have been added to each cluster.
+Table 5 shows the final clusters. While 64 clusters were generated, only the largest 10 are shown. Only words that occurred in at least 16 documents, which is about half of all words, were considered. K-Means++ was used to generate the initial cluster centroids. Names have been added to each cluster.
  
-For the most part, the clusters make sense. 
-
 \subsection{Issues with K-Means}
 
 \subsubsection{Variability in Cluster Size}
 
-The most glaring issue with these results is that the sizes of the clusters vary greatly. One cluster contains about half of the documents while the other 63 contain the other half. There are many useless one document clusters. It is difficult to know if this is intrinsic to the data, or an issue with the K-Means algorithm. Since we are working with over 10,000 dimensions, it is impossible to visualize the data and get an intuition about which model would work best. Using dimensionality  
+The most glaring issue with these results is that the sizes of the clusters vary greatly. One cluster contains about half of the documents while the other 63 contain the other half. There are many useless one document clusters.
+
+It is difficult to know if this is an intrinsic part of the data, or an issue with the K-Means algorithm. I suspect that it is a combination of both, and that K-Means is not the best model for the data.
+
+While exploring the data, I did try to visualize it using Multidimensional Scaling (MDS), but I found that too much information was lost in the dimensionality reduction for it to be of any use. Textual data is high dimensional and sparse by its nature, which makes it somewhat unintuitive to work with in this context. It would be interesting to further explore dimensionality reduction techniques as well as alternate clustering algorithms and see if they could help address the problem of cluster sparsity.
 
 \subsubsection{Different Meanings of the Same Word}
 
-For example, cluster 9 contains documents about mars. Its main words are "mars", "crater", "astronomical", "expedition", and "planets". However, there are two documents in this cluster that have nothing to do with mars. "hostagefilm" (\textit{Hostage} (film)) is an American action movie whose main character is named Marshall "Mars" Krupcheck. "marsrapper" (\textit{Mars} (rapper)) is a Bay Area rapper who goes by "Mars". 
+Some clusters contain documents that are related by a single word, where each document refers to a different meaning of the word. For example, cluster 9 contains documents about mars. Its main words are "mars", "crater", "astronomical", "expedition", and "planets". However, there are two documents in this cluster that have nothing to do with mars. "hostagefilm" (\textit{Hostage} (film)) is an American action movie whose main character is named Marshall "Mars" Krupcheck. "marsrapper" (\textit{Mars} (rapper)) is a Bay Area rapper who goes by "Mars".
 
 
 \subsection{Further Research}
 
-One of the core assumptions of K-Means is that the data can be grouped into spherically symmetric clusters of the same size. This is quite a strong assumption, and it does not seem to be true in the case of Wikipedia articles. It would be interesting to experiment with other clustering techniques better suited to high dimensional text data. 
+I had intended to explore Latent Dirichlet Allocation but ended up focusing on K-Means instead. As a starting point, I used SciKit's LDA implementation, which seemed to work quite well. The words in each topic are related just as they should be. This would have been be a great topic to research more, if I had the time.
+
+\begin{table}[!htb]
+\caption{16 topics generated using Latent Dirichlet Allocation.}
+\label{most-common-words-table}
+\begin{center}
+    \begin{tabular}{ | c | }
+    \hline
+    \textbf{Topics} \\ \hline
+
+magazine, published, journal, format, awards \\ \hline 
+painting, gallery, paintings, painted, station \\ \hline 
+greek, empire, ancient, jews, dynasty \\ \hline 
+served, appointed, general, senate, member \\ \hline 
+systems, system, design, device, czech \\ \hline 
+party, security, elections, rights, police \\ \hline 
+station, air, route, railway, traffic \\ \hline 
+season, females, club, miles, tournament \\ \hline 
+church, building, house, located, castle \\ \hline 
+group, swedish, users, stockholm, program \\ \hline 
+engine, cars, comics, ford, novels \\ \hline 
+students, college, institute, campus, program \\ \hline 
+player, characters, red, color, blue \\ \hline 
+album, released, songs, musical, records \\ \hline 
+human, family, published, man, god \\ \hline 
+common, temperature, chemical, protein, oil \\ \hline 
+
+\end{tabular}
+\end{center}
+\end{table}
 
 
 
-\section{Conclusion}
 
 
-
-\begin{table}[t]
+\begin{table}[!b]
 \caption{10 largest K-Means clusters with $K=64$. Using words that appear in at least 16 (0.1\%) documents with K-Means++ for initializing cluster centroids.}
 \label{cluster-new-table}
 \begin{center}
@@ -296,6 +325,16 @@ One of the core assumptions of K-Means is that the data can be grouped into sphe
  
 \end{tabular}
 \end{center}
-\end{table}
+\end{table}
+
+\clearpage
+
+\subsubsection*{References}
+
+\small{
+[1] MacQueen, J. B. (1967). Some Methods for classification and Analysis of Multivariate Observations. {\it Proceedings of 5th Berkeley Symposium on Mathematical Statistics and Probability }. 1. University of California Press. pp. 281–297. MR 0214227. Zbl 0214.46201. Retrieved 2009-04-07.
+
+[2] Arthur, D.; Vassilvitskii, S. (2007). "k-means++: the advantages of careful seeding" (PDF). {\it Proceedings of the eighteenth annual ACM-SIAM symposium on Discrete algorithms.} Society for Industrial and Applied Mathematics Philadelphia, PA, USA. pp. 1027–1035.
+}
 
 \end{document}
