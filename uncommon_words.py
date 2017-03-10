@@ -29,12 +29,15 @@ def explore():
     print_words(word_freq_sort_index[:n])
     print('most common words')
     print_words(word_freq_sort_index[:-n-1:-1])
+    print('median common words')
+    l = len(word_freq_sort_index) // 2
+    print_words(word_freq_sort_index[l-(n//2):l+(n//2)])
     print("median word frequency: {}".format(np.median(word_freq)))
 
 
 def tfidf_threshold(minimum, path):
     dictionary = load_dictionary()
-    documents = load_documents(dictionary=dictionary)
+    documents = load_documents('train', dictionary=dictionary)
     word_freq = get_word_freq(documents)
     below_threshold = word_freq < minimum
 
@@ -46,7 +49,7 @@ def tfidf_threshold(minimum, path):
 
 def main():
     explore()
-    # tfidf_threshold(16, 'train_min_16')
+    # tfidf_threshold(160, 'train_min_160')
 
 
 main()

@@ -7,7 +7,7 @@ from load import load_k_means
 def distortion(clusters):
     return sum(cluster.distortion() for cluster in clusters)
 
-xs = [2 ** n for n in range(9)]
+xs = [2 ** n for n in range(7)]
 ys = [distortion(load_k_means(k)) for k in xs]
 plt.plot(xs, ys)
 

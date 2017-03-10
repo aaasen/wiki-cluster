@@ -22,7 +22,7 @@ def load_dicts(path):
         return (title, pairs)
 
     with open(path) as f:
-        return [pair(row) for row in f.readlines()]
+        return [pair(row) for row in f.readlines() if ',' in row]
 
 
 def write_documents(docs, path):
@@ -67,8 +67,9 @@ def load_document_matrix(path=DOCUMENT_PATH, dictionary_path=DICTIONARY_PATH):
     return document_matrix(load_documents(path, dictionary_path))
 
 
-def load_k_means(k, document_path=DOCUMENT_PATH):
-    path = '{}_{}.pickle'.format(document_path, k)
+def load_k_means(k, document_path=DOCUMENT_PATH, seed=None):
+    path = '{}_{}{}.pickle'.format(document_path, k,
+                                   '' if seed is None else '_{}'.format(seed))
     try:
         with open(path, 'rb') as f:
             print('loading cached clusters from {}'.format(path))
@@ -76,7 +77,7 @@ def load_k_means(k, document_path=DOCUMENT_PATH):
     except FileNotFoundError:
         print('no cached clusters found')
         documents = load_documents(document_path)
-        clusters = k_means.cluster(k, documents)
+        clusters = k_means.cluster(k, documents, seed=seed)
         with open(path, 'wb') as f:
             pickle.dump(clusters, f)
         return clusters

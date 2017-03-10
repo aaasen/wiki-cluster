@@ -32,3 +32,7 @@ class Cluster(namedtuple('Cluster', 'centroid, documents')):
 
     def __len__(self):
         return len(self.documents)
+
+    @staticmethod
+    def total_distortion(clusters):
+        return sum(cluster.distortion() for cluster in clusters)

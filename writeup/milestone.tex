@@ -3,6 +3,7 @@
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage{graphicx}
+\usepackage{hyperref}
 \graphicspath{ {images/} }
 %\documentstyle[nips13submit_09,times,art10]{article} % For LaTeX 2.09
 
@@ -37,17 +38,17 @@ Seattle, WA 98105\\
 \maketitle
 
 \begin{abstract}
-Clustering Wikipedia articles using unsupervised learning techniques including K-Means and Latent Dirichlet Allocation (LDA).
+Clustering Wikipedia articles using unsupervised learning techniques including K-Means and Latent Dirichlet Allocation (LDA). Exploration into K-Means including choice of K, K-Means++, the effect of random seeds, and TF-IDF thresholds.
 \end{abstract}
 
 
 \section{Dataset}
 
-The provided dataset contains 15,903 Wikipedia articles in tf-idf format. There are 10,574 unique words in this dataset. Each document is represented as a sparse vector with one dimension for each word.
+The provided dataset contains 15,903 Wikipedia articles in tf-idf format. Most of the articles are in English, but some are not. Sorting the documents by language would be an interesting project in itself! There are 10,574 unique words in this dataset. Each document is represented as a sparse vector with one dimension for each word. Stop words have been removed from the dataset, but uncommon words remain.
 
 \section{K-Means Clustering}
 
-For the project milestone, I have implemented K-Means clustering on the provided subset of Wikipedia articles.
+My first goal was to implement a basic K-Means clustering algorithm from scratch. The code is available at \url{https://github.com/aaasen/wiki-cluster}.
 
 \subsection{Choosing K}
 
@@ -168,9 +169,40 @@ long & 2164 & 13.607\% \\ \hline
 \end{center}
 \end{table}
 
+\subsubsection{Selecting a Threshold}
+
+Since the provided dataset does not contain stop words, I decided not to filter out common words. The most common words in the dataset appear to contain useful information for clustering. 
+
+Selecting a lower threshold involves finding the right balance between information loss and cluster sparsity. Words that are only used in one document should be ignored, since they provide no useful clustering information. The problem gets murkier with words that are used in just a few datasets. Table 3 lists ten words near the median, which is words that appear in 16 datasets. These words appear to have enough value for clustering that they should not be excluded. One of the large problems here is that we are working with only 15,000 of the 5 million English Wikipedia articles, which makes it difficult to produce fine-grained clusters. 
+
+
+\begin{table}[t]
+\caption{10 words near the median.}
+\label{median-common-words-table}
+\begin{center}
+    \begin{tabular}{ | c | c | c |}
+    \hline
+    \textbf{Word} & \textbf{Documents} & \textbf{Percentage of Documents} \\ \hline
+
+multimillion & 16 & 0.10061\% \\ \hline 
+pisa & 16 & 0.10061\% \\ \hline 
+pranks & 16 & 0.10061\% \\ \hline 
+pesticides & 16 & 0.10061\% \\ \hline 
+hesitation & 16 & 0.10061\% \\ \hline 
+convection & 16 & 0.10061\% \\ \hline 
+ortiz & 16 & 0.10061\% \\ \hline 
+stagnation & 16 & 0.10061\% \\ \hline 
+gonzlez & 16 & 0.10061\% \\ \hline 
+cummins & 16 & 0.10061\% \\ \hline 
+
+\end{tabular}
+\end{center}
+\end{table}
+
+
 \subsection{Effect of Seed on Distortion}
 
-After observing some variability in my plots of K vs Distortion, I decided to investigate the effect of random seeds on distortion.
+After observing some unexpected variability in my results, I decided to investigate the effect of random seeds on distortion.
 
 I found that the choice of seed can have a large impact on cluster quality and distortion. Because of this, it is very important to run K-Means with at least a few different seeds and select the best one. I opted to not do this in the above experiments because it would have been too computationally expensive, but I will try many different seeds when generating the final clusters.
 
@@ -181,15 +213,13 @@ I found that the choice of seed can have a large impact on cluster quality and d
 \caption{Distortion using K-Means++ on 100 training documents with different random seeds.}
 \end{figure}
 
-
-\begin{figure}[h]
-\begin{center}
-\framebox{\includegraphics[scale=0.4]{k_vs_cluster_size_++}}
-\end{center}
-\caption{$K$ versus minimum, median, and maximum cluster size for $K \in \{1,2,4,...,64\}$ with a $log_{2}$ scale on both axes. Using K-Means++.}
-\end{figure}
+\section{Conclusion}
 
 
+
+\subsection{Further Research}
+
+One of the core assumptions of K-Means is that the data can be grouped into spherically symmetric clusters of the same size. This is quite a strong assumption, and it does not seem to be true in the case of Wikipedia articles. It would be interesting to experiment with other clustering techniques better suited to high dimensional text data. 
 
 
 \section{Next Steps}
@@ -224,4 +254,30 @@ Some of the clusters contain documents that refer to difference meanings of the 
 \end{tabular}
 \end{center}
 \end{table}
+
+\section{Conclusion}
+
+\begin{table}[t]
+\caption{10 largest K-Means clusters with $K=64$. Using words that appear in at least 16 (0.1\%) documents with K-Means++ for initializing cluster centroids.}
+\label{cluster-new-table}
+\begin{center}
+    \begin{tabular}{ | c | c | c | c |}
+    \hline
+    \textbf{Cluster} & \textbf{Size} & \textbf{Words} & \textbf{Documents} \\ \hline
+ 
+0 & 8486 & \parbox[t]{2cm}{females \\ station \\ family \\ north \\ located} & \parbox[t]{8cm}{kotavamsa \\ tornadoesof1993 \\ whitby \\ colinmeads \\ mladeniiiubiofbribir} \\ \hline 
+1 & 2226 & \parbox[t]{2cm}{students \\ system \\ high \\ program \\ technology} & \parbox[t]{8cm}{edmondscommunitycollege \\ helderbergcollege \\ stargateschool \\ miltonhighschoolmiltongeorgia \\ govthazimuhammadmohsincollege} \\ \hline 
+2 & 2085 & \parbox[t]{2cm}{church \\ published \\ daughter \\ royal \\ paris} & \parbox[t]{8cm}{molire \\ oberlincongregationalchurch \\ lundbyoldchurch \\ stmaryschurchgrodno \\ dioceseoflimerickandkillaloe} \\ \hline 
+3 & 1001 & \parbox[t]{2cm}{party \\ served \\ member \\ general \\ senate} & \parbox[t]{8cm}{partyidentification \\ labourfarmerparty \\ serbianliberalparty \\ bronwenmaher \\ democraticalliancesouthafrica} \\ \hline 
+4 & 932 & \parbox[t]{2cm}{season \\ club \\ playing \\ seasons \\ player} & \parbox[t]{8cm}{bjsamsamericanfootball \\ dancingwiththestars \\ davidmccracken \\ johnflanaganfootballer \\ gilbertcurgenven} \\ \hline 
+5 & 640 & \parbox[t]{2cm}{album \\ released \\ songs \\ records \\ rock} & \parbox[t]{8cm}{primalscream \\ thegreatestdaytakethatalbum \\ conflictingemotions \\ bornthisway \\ sweetkisses} \\ \hline 
+6 & 280 & \parbox[t]{2cm}{japanese \\ japan \\ chinese \\ pearl \\ characters} & \parbox[t]{8cm}{frederickringer \\ astorhousehotelshanghai19221959 \\ japanesebadger \\ imperialjapanesearmyairforce \\ listofflclepisodes} \\ \hline 
+7 & 44 & \parbox[t]{2cm}{pop \\ songs \\ album \\ chart \\ rock} & \parbox[t]{8cm}{popmusic \\ teenpop \\ britishpopmusic \\ talkinginyoursleepcrystalgaylesong \\ blahblahblahalbum} \\ \hline 
+8 & 27 & \parbox[t]{2cm}{investigation \\ money \\ system \\ june \\ doctor} & \parbox[t]{8cm}{digitalmonetarytrust \\ andyhayman \\ martensvillesatanicsexscandal \\ johnlittlechild \\ unitedstatesvlibby} \\ \hline 
+9 & 22 & \parbox[t]{2cm}{mars \\ crater \\ astronomical \\ expedition \\ planets} & \parbox[t]{8cm}{hostagefilm \\ marsrapper \\ entomopter \\ mars2 \\ carbonatesonmars} \\ \hline 
+ 
+\end{tabular}
+\end{center}
+\end{table}
+
 \end{document}

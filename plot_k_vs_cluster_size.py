@@ -2,8 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from load import load_k_means
+from config import DOCUMENT_PATH
 
-ks = [2 ** n for n in range(9)]
+ks = [2 ** n for n in range(7)]
 lens = [[len(cluster) for cluster in load_k_means(k)] for k in ks]
 
 for i in range(len(ks)):
@@ -25,5 +26,5 @@ plt.ylabel('Cluster Size')
 plt.yscale('log', basey=2)
 plt.xscale('log', basex=2)
 plt.tight_layout()
-plt.savefig('writeup/images/k_vs_cluster_size.png')
+plt.savefig('writeup/images/k_vs_cluster_size_{}.png'.format(DOCUMENT_PATH))
 plt.show()

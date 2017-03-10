@@ -35,7 +35,7 @@ def _sample(array):
             return i
 
 
-def k_means_plus_plus(k, documents):
+def k_means_plus_plus(k, documents, seed=SEED):
     """
     K-means++ is a method of initializing cluster centroids.
     The algorithm works as follows (Wikipedia):
@@ -48,6 +48,7 @@ def k_means_plus_plus(k, documents):
      4. Repeat Steps 2 and 3 until k centers have been chosen.
     """
 
+    random.seed(seed)
     init_centroid_index = random.randint(0, len(documents) - 1)
     centroid_indexes = {init_centroid_index}
     centroids = [documents[init_centroid_index].vector]
@@ -65,13 +66,17 @@ def k_means_plus_plus(k, documents):
     return centroids
 
 
-def random_documents(k, documents):
+def random_documents(k, documents, seed=SEED):
+    random.seed(seed)
     return [doc.vector for doc in random.sample(documents, k)]
 
 
-def cluster(k, documents, centroids=None, init=k_means_plus_plus):
+def cluster(k, documents, centroids=None, init=k_means_plus_plus, seed=None):
+    if seed is None:
+        seed = SEED
+
     if centroids is None:
-        centroids = init(k, documents)
+        centroids = init(k, documents, seed)
 
     print(k)
     while True:
