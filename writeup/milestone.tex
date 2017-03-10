@@ -44,7 +44,7 @@ Clustering Wikipedia articles using unsupervised learning techniques including K
 
 \section{Dataset}
 
-The provided dataset contains 15,903 Wikipedia articles in tf-idf format. Most of the articles are in English, but some are not. Sorting the documents by language would be an interesting project in itself! There are 10,574 unique words in this dataset. Each document is represented as a sparse vector with one dimension for each word. Stop words have been removed from the dataset, but uncommon words remain.
+The provided dataset contains 15,903 Wikipedia articles in term frequency inverse document frequency (tf-idf) format. Most of the articles are in English, but some are not. Sorting the documents by language would be an interesting project in itself! There are 10,574 unique words in this dataset. Each document is represented as a sparse vector with one dimension for each word. Stop words have been removed from the dataset, but uncommon words remain.
 
 \section{K-Means Clustering}
 
@@ -86,21 +86,48 @@ Over half of the clusters are very small, and one of the clusters is too large t
 
 \subsection{Exploring Clusters}
 
-Table 1 shows the clusters with at least 10 documents for K-Means clustering with $K=16$. The words in each cluster are the dimensions of the centroid with the largest magnitude. The documents shown are those that are closest to the centroid of the cluster.
+Table 1 shows the clusters with at least 10 documents for K-Means clustering with $K=16$. The words in each cluster are the dimensions of the centroid with the largest magnitude. The documents shown are those that are closest to the centroid of the cluster. 
 
 Overall, the generated clusters make sense, but there are some points of confusion:
 
 \begin{itemize}
 \item The words that make up cluster 0 have little relation to each other. This cluster contains the majority of the documents.
 \item Cluster 1 contains churches as well as colleges.
-\item Cluster 3 contains documents related to TV shows and sports because both contain the word "season."
+\item Cluster 3 contains documents related to TV shows and sports because both contain the word "season." Another explanation for this is that sports players appear on Dancing with the Stars.
 \end{itemize}
+
+
+
+\begin{table}[!htb]
+\caption{K-Means clusters with $K=16$ and at least 10 documents.}
+\label{cluster-table}
+\begin{center}
+    \begin{tabular}{ | c | c | c | c |}
+    \hline
+    \textbf{Cluster} & \textbf{Size} & \textbf{Words} & \textbf{Documents} \\ \hline
+    
+0 & 10061 & \parbox[t]{2cm}{females \\ station \\ family \\ located \\ north} & \parbox[t]{8cm}{mcgillpainquestionnaire \\ historyofthefamily \\ thetussaudsgroup \\ nadiraactress \\ mansfieldsummithighschool} \\ \hline 
+1 & 3013 & \parbox[t]{2cm}{church \\ college \\ students \\ published \\ institute} & \parbox[t]{8cm}{edmondscommunitycollege \\ helderbergcollege \\ oberlincongregationalchurch \\ lundbyoldchurch \\ dioceseoflimerickandkillaloe} \\ \hline 
+2 & 1128 & \parbox[t]{2cm}{party \\ served \\ general \\ member \\ senate} & \parbox[t]{8cm}{partyidentification \\ labourfarmerparty \\ democraticalliancesouthafrica \\ liberaldemocratsitaly \\ christiancreditparty} \\ \hline 
+3 & 909 & \parbox[t]{2cm}{season \\ club \\ playing \\ seasons \\ player} & \parbox[t]{8cm}{dancingwiththestars \\ davidmccracken \\ gilbertcurgenven \\ bjsamsamericanfootball \\ livingstonewalker} \\ \hline 
+4 & 707 & \parbox[t]{2cm}{album \\ released \\ songs \\ records \\ rock} & \parbox[t]{8cm}{thegreatestdaytakethatalbum \\ conflictingemotions \\ primalscream \\ leftbacklp \\ elisamartin} \\ \hline 
+5 & 30 & \parbox[t]{2cm}{nba \\ basketball \\ points \\ season \\ seasons} & \parbox[t]{8cm}{kcjones \\ hakeemolajuwon \\ albertkingbasketball \\ ballstatecardinalsmensbasketball \\ 201011southfloridabullsmensbasketballteam} \\ \hline 
+6 & 23 & \parbox[t]{2cm}{riots \\ police \\ murder \\ captured \\ robbery} & \parbox[t]{8cm}{sowetouprising \\ 1992losangelesriots \\ nikolaybogolepov \\ josephlamothe \\ jenmi} \\ \hline 
+7 & 13 & \parbox[t]{2cm}{congo \\ subtropical \\ republic \\ zambia \\ zimbabwe} & \parbox[t]{8cm}{republicofcabinda \\ brownrumpedbunting \\ copperbeltprovince \\ leptopelisviridis \\ yellowthroatedpetronia} \\ \hline 
+ 
+\end{tabular}
+\end{center}
+\end{table}
 
 \subsection{K-Means++}
 
-K-Means++ is a method for selecting initial cluster centers for K-Means. In the normal version of K-Means, initial cluster centroids are selected by sampling random documents from the dataset. This can produce suboptimal clusters, increase time to convergence, and increase variability in clustering performance. K-Means solves this by selecting initial centroids one at a time to minimize distortion.
+K-Means++ is a method for selecting the initial cluster centers for K-Means. In the normal version of K-Means, initial cluster centroids are selected by sampling random documents from the dataset. This can produce suboptimal clusters, increase time to convergence, and increase variability in clustering performance. 
+
+K-Means++ solves this by selecting initial centroids one at a time in order to minimize distortion. Each document is given a weight proportional to the distance to the nearest centroid and the next centroid is selected at random using these weights until $K$ centroids have been chosen. This results in better centroids than random sampling and lessens the time until convergence. However, it can be quite expensive when $K$ is large since the distance from each document to each cluster centroid must be computed at every iteration.
 
 I implemented K-Means++ and expected it to increase clustering performance considerably. However, I found that it actually had a slightly negative impact on distortion and noticeably increased cluster sparsity. 
+
+I think that this is because outliers were chosen as initial centroids and the clusters never expanded to include other points.
 
 \begin{figure}[h]
 \begin{center}
@@ -121,7 +148,7 @@ I implemented K-Means++ and expected it to increase clustering performance consi
 
 After implementing K-Means++ with no success, it became apparent that there was a problem with the underlying data, and not with the clustering algorithm. 
 
-I began to investigate the provided dataset, which was in tf-idf format with no documentation. I found that stop words had been removed from the dataset, but rare words had been left in. Half of the words in the dictionary were used in 16 or fewer datasets (less than 0.1\%). This was the obvious cause of cluster sparsity in the dataset. 
+I began to investigate the provided dataset, which was in tf-idf format with no documentation. I found that stop words had been removed from the dataset, but rare words had been left in. Half of the words in the dictionary were used in 16 or fewer datasets (less than 0.1\%). Tables 2, 3, and 4 show the least common, somewhat common, and most common words in the dataset, respectively.
 
 \begin{table}[t]
 \caption{10 least common words with the number and percentage of documents that they appear in.}
@@ -146,7 +173,31 @@ rosettes & 3 & 0.018864\% \\ \hline
 \end{center}
 \end{table}
 
+
 \begin{table}[t]
+\caption{10 words near the median with the number and percentage of documents that they appear in.}
+\label{median-common-words-table}
+\begin{center}
+    \begin{tabular}{ | c | c | c |}
+    \hline
+    \textbf{Word} & \textbf{Documents} & \textbf{Percentage of Documents} \\ \hline
+
+multimillion & 16 & 0.10061\% \\ \hline 
+pisa & 16 & 0.10061\% \\ \hline 
+pranks & 16 & 0.10061\% \\ \hline 
+pesticides & 16 & 0.10061\% \\ \hline 
+hesitation & 16 & 0.10061\% \\ \hline 
+convection & 16 & 0.10061\% \\ \hline 
+ortiz & 16 & 0.10061\% \\ \hline 
+stagnation & 16 & 0.10061\% \\ \hline 
+gonzlez & 16 & 0.10061\% \\ \hline 
+cummins & 16 & 0.10061\% \\ \hline 
+
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[!htb]
 \caption{10 most common words with the number and percentage of documents that they appear in.}
 \label{most-common-words-table}
 \begin{center}
@@ -169,35 +220,19 @@ long & 2164 & 13.607\% \\ \hline
 \end{center}
 \end{table}
 
+
+
 \subsubsection{Selecting a Threshold}
 
 Since the provided dataset does not contain stop words, I decided not to filter out common words. The most common words in the dataset appear to contain useful information for clustering. 
 
-Selecting a lower threshold involves finding the right balance between information loss and cluster sparsity. Words that are only used in one document should be ignored, since they provide no useful clustering information. The problem gets murkier with words that are used in just a few datasets. Table 3 lists ten words near the median, which is words that appear in 16 datasets. These words appear to have enough value for clustering that they should not be excluded. One of the large problems here is that we are working with only 15,000 of the 5 million English Wikipedia articles, which makes it difficult to produce fine-grained clusters. 
+Selecting a lower threshold involves finding the right balance between information loss and cluster sparsity. Words that are only used in one document should be ignored since they provide no useful clustering information. The problem gets murkier with words that are used in just a few datasets. Table 3 lists ten words that are somewhat common, in that their counts are exactly at the median word count. Some of these words seem useful for clustering, such as "multimillion", "pesticides", and "convection". Others are names which do not necessarily indicate document similarity. 
+
+One of the large problems here is that we are working with only 15,000 of the 5 million English Wikipedia articles. If we were working with more data, we could produce more fine-grained clusters with rarer words. However, since we only have a tiny subset of Wikipedia, we just don't have enough examples to produce these narrow clusters.
+
+There is no correct way to choose a tf-idf threshold. I ended up choosing to get rid of the least common half of words, but many other choices would be just as valid.
 
 
-\begin{table}[t]
-\caption{10 words near the median.}
-\label{median-common-words-table}
-\begin{center}
-    \begin{tabular}{ | c | c | c |}
-    \hline
-    \textbf{Word} & \textbf{Documents} & \textbf{Percentage of Documents} \\ \hline
-
-multimillion & 16 & 0.10061\% \\ \hline 
-pisa & 16 & 0.10061\% \\ \hline 
-pranks & 16 & 0.10061\% \\ \hline 
-pesticides & 16 & 0.10061\% \\ \hline 
-hesitation & 16 & 0.10061\% \\ \hline 
-convection & 16 & 0.10061\% \\ \hline 
-ortiz & 16 & 0.10061\% \\ \hline 
-stagnation & 16 & 0.10061\% \\ \hline 
-gonzlez & 16 & 0.10061\% \\ \hline 
-cummins & 16 & 0.10061\% \\ \hline 
-
-\end{tabular}
-\end{center}
-\end{table}
 
 
 \subsection{Effect of Seed on Distortion}
@@ -215,6 +250,19 @@ I found that the choice of seed can have a large impact on cluster quality and d
 
 \section{Conclusion}
 
+Table 5 shows the final clusters. While 64 clusters were generated, only the largest 10 are shown. These clusters with words that occurred in at least 16 documents, which is about half of all words. K-Means++ was used to generate the initial cluster centroids. Names have been added to each cluster.
+ 
+For the most part, the clusters make sense. 
+
+\subsection{Issues with K-Means}
+
+\subsubsection{Variability in Cluster Size}
+
+The most glaring issue with these results is that the sizes of the clusters vary greatly. One cluster contains about half of the documents while the other 63 contain the other half. There are many useless one document clusters. It is difficult to know if this is intrinsic to the data, or an issue with the K-Means algorithm. Since we are working with over 10,000 dimensions, it is impossible to visualize the data and get an intuition about which model would work best. Using dimensionality  
+
+\subsubsection{Different Meanings of the Same Word}
+
+For example, cluster 9 contains documents about mars. Its main words are "mars", "crater", "astronomical", "expedition", and "planets". However, there are two documents in this cluster that have nothing to do with mars. "hostagefilm" (\textit{Hostage} (film)) is an American action movie whose main character is named Marshall "Mars" Krupcheck. "marsrapper" (\textit{Mars} (rapper)) is a Bay Area rapper who goes by "Mars". 
 
 
 \subsection{Further Research}
@@ -222,59 +270,29 @@ I found that the choice of seed can have a large impact on cluster quality and d
 One of the core assumptions of K-Means is that the data can be grouped into spherically symmetric clusters of the same size. This is quite a strong assumption, and it does not seem to be true in the case of Wikipedia articles. It would be interesting to experiment with other clustering techniques better suited to high dimensional text data. 
 
 
-\section{Next Steps}
-
-\subsection{Recursive K-Means}
-
-One of the largest issues with applying K-Means to this dataset is that it produces clusters with huge size variations. Some clusters contain 10,000 documents, whereas others contain only one. Recursively applying K-means to large clusters could address this problem and even produce a sort of hierarchical clustering.
-
-\subsection{Latent Dirichlet Allocation}
-
-Some of the clusters contain documents that refer to difference meanings of the same word. For example, "season" could refer to a football season or a TV show season. I would like to explore Latent Dirichlet Allocation and whether or not it could help with this situation.
-
-\begin{table}[t]
-\caption{K-Means clusters with $K=16$ and at least 10 documents.}
-\label{cluster-table}
-\begin{center}
-    \begin{tabular}{ | c | c | c | c |}
-    \hline
-    \textbf{Cluster} & \textbf{Size} & \textbf{Words} & \textbf{Documents} \\ \hline
-    
-0 & 10061 & \parbox[t]{2cm}{females \\ station \\ family \\ located \\ north} & \parbox[t]{8cm}{mcgillpainquestionnaire \\ historyofthefamily \\ thetussaudsgroup \\ nadiraactress \\ mansfieldsummithighschool} \\ \hline 
-1 & 3013 & \parbox[t]{2cm}{church \\ college \\ students \\ published \\ institute} & \parbox[t]{8cm}{edmondscommunitycollege \\ helderbergcollege \\ oberlincongregationalchurch \\ lundbyoldchurch \\ dioceseoflimerickandkillaloe} \\ \hline 
-2 & 1128 & \parbox[t]{2cm}{party \\ served \\ general \\ member \\ senate} & \parbox[t]{8cm}{partyidentification \\ labourfarmerparty \\ democraticalliancesouthafrica \\ liberaldemocratsitaly \\ christiancreditparty} \\ \hline 
-3 & 909 & \parbox[t]{2cm}{season \\ club \\ playing \\ seasons \\ player} & \parbox[t]{8cm}{dancingwiththestars \\ davidmccracken \\ gilbertcurgenven \\ bjsamsamericanfootball \\ livingstonewalker} \\ \hline 
-4 & 707 & \parbox[t]{2cm}{album \\ released \\ songs \\ records \\ rock} & \parbox[t]{8cm}{thegreatestdaytakethatalbum \\ conflictingemotions \\ primalscream \\ leftbacklp \\ elisamartin} \\ \hline 
-5 & 30 & \parbox[t]{2cm}{nba \\ basketball \\ points \\ season \\ seasons} & \parbox[t]{8cm}{kcjones \\ hakeemolajuwon \\ albertkingbasketball \\ ballstatecardinalsmensbasketball \\ 201011southfloridabullsmensbasketballteam} \\ \hline 
-6 & 23 & \parbox[t]{2cm}{riots \\ police \\ murder \\ captured \\ robbery} & \parbox[t]{8cm}{sowetouprising \\ 1992losangelesriots \\ nikolaybogolepov \\ josephlamothe \\ jenmi} \\ \hline 
-7 & 13 & \parbox[t]{2cm}{congo \\ subtropical \\ republic \\ zambia \\ zimbabwe} & \parbox[t]{8cm}{republicofcabinda \\ brownrumpedbunting \\ copperbeltprovince \\ leptopelisviridis \\ yellowthroatedpetronia} \\ \hline 
- 
-
- 
-\end{tabular}
-\end{center}
-\end{table}
 
 \section{Conclusion}
+
+
 
 \begin{table}[t]
 \caption{10 largest K-Means clusters with $K=64$. Using words that appear in at least 16 (0.1\%) documents with K-Means++ for initializing cluster centroids.}
 \label{cluster-new-table}
 \begin{center}
-    \begin{tabular}{ | c | c | c | c |}
+    \begin{tabular}{ | c | c | c | c | c | }
     \hline
-    \textbf{Cluster} & \textbf{Size} & \textbf{Words} & \textbf{Documents} \\ \hline
+    \textbf{Cluster} & \textbf{Size} & \textbf{Words} & \textbf{Documents} & \textbf{Label} \\ \hline
  
-0 & 8486 & \parbox[t]{2cm}{females \\ station \\ family \\ north \\ located} & \parbox[t]{8cm}{kotavamsa \\ tornadoesof1993 \\ whitby \\ colinmeads \\ mladeniiiubiofbribir} \\ \hline 
-1 & 2226 & \parbox[t]{2cm}{students \\ system \\ high \\ program \\ technology} & \parbox[t]{8cm}{edmondscommunitycollege \\ helderbergcollege \\ stargateschool \\ miltonhighschoolmiltongeorgia \\ govthazimuhammadmohsincollege} \\ \hline 
-2 & 2085 & \parbox[t]{2cm}{church \\ published \\ daughter \\ royal \\ paris} & \parbox[t]{8cm}{molire \\ oberlincongregationalchurch \\ lundbyoldchurch \\ stmaryschurchgrodno \\ dioceseoflimerickandkillaloe} \\ \hline 
-3 & 1001 & \parbox[t]{2cm}{party \\ served \\ member \\ general \\ senate} & \parbox[t]{8cm}{partyidentification \\ labourfarmerparty \\ serbianliberalparty \\ bronwenmaher \\ democraticalliancesouthafrica} \\ \hline 
-4 & 932 & \parbox[t]{2cm}{season \\ club \\ playing \\ seasons \\ player} & \parbox[t]{8cm}{bjsamsamericanfootball \\ dancingwiththestars \\ davidmccracken \\ johnflanaganfootballer \\ gilbertcurgenven} \\ \hline 
-5 & 640 & \parbox[t]{2cm}{album \\ released \\ songs \\ records \\ rock} & \parbox[t]{8cm}{primalscream \\ thegreatestdaytakethatalbum \\ conflictingemotions \\ bornthisway \\ sweetkisses} \\ \hline 
-6 & 280 & \parbox[t]{2cm}{japanese \\ japan \\ chinese \\ pearl \\ characters} & \parbox[t]{8cm}{frederickringer \\ astorhousehotelshanghai19221959 \\ japanesebadger \\ imperialjapanesearmyairforce \\ listofflclepisodes} \\ \hline 
-7 & 44 & \parbox[t]{2cm}{pop \\ songs \\ album \\ chart \\ rock} & \parbox[t]{8cm}{popmusic \\ teenpop \\ britishpopmusic \\ talkinginyoursleepcrystalgaylesong \\ blahblahblahalbum} \\ \hline 
-8 & 27 & \parbox[t]{2cm}{investigation \\ money \\ system \\ june \\ doctor} & \parbox[t]{8cm}{digitalmonetarytrust \\ andyhayman \\ martensvillesatanicsexscandal \\ johnlittlechild \\ unitedstatesvlibby} \\ \hline 
-9 & 22 & \parbox[t]{2cm}{mars \\ crater \\ astronomical \\ expedition \\ planets} & \parbox[t]{8cm}{hostagefilm \\ marsrapper \\ entomopter \\ mars2 \\ carbonatesonmars} \\ \hline 
+0 & 8486 & \parbox[t]{2cm}{females \\ station \\ family \\ north \\ located} & \parbox[t]{5cm}{kotavamsa \\ tornadoesof1993 \\ whitby \\ colinmeads \\ mladeniiiubiofbribir} &  \\ \hline 
+1 & 2226 & \parbox[t]{2cm}{students \\ system \\ high \\ program \\ technology} & \parbox[t]{5cm}{edmondscommunitycollege \\ helderbergcollege \\ stargateschool \\ miltonhighschoolmiltongeorgia \\ govthazimuhammadmohsincollege} & Colleges \\ \hline 
+2 & 2085 & \parbox[t]{2cm}{church \\ published \\ daughter \\ royal \\ paris} & \parbox[t]{5cm}{molire \\ oberlincongregationalchurch \\ lundbyoldchurch \\ stmaryschurchgrodno \\ dioceseoflimerickandkillaloe} & Churches \\ \hline 
+3 & 1001 & \parbox[t]{2cm}{party \\ served \\ member \\ general \\ senate} & \parbox[t]{5cm}{partyidentification \\ labourfarmerparty \\ serbianliberalparty \\ bronwenmaher \\ democraticalliancesouthafrica} & Political Parties \\ \hline 
+4 & 932 & \parbox[t]{2cm}{season \\ club \\ playing \\ seasons \\ player} & \parbox[t]{5cm}{bjsamsamericanfootball \\ dancingwiththestars \\ davidmccracken \\ johnflanaganfootballer \\ gilbertcurgenven} & Sports \\\hline 
+5 & 640 & \parbox[t]{2cm}{album \\ released \\ songs \\ records \\ rock} & \parbox[t]{5cm}{primalscream \\ thegreatestdaytakethatalbum \\ conflictingemotions \\ bornthisway \\ sweetkisses} & Rock Music \\ \hline 
+6 & 280 & \parbox[t]{2cm}{japanese \\ japan \\ chinese \\ pearl \\ characters} & \parbox[t]{5cm}{frederickringer \\ astorhousehotelshanghai19221959 \\ japanesebadger \\ imperialjapanesearmyairforce \\ listofflclepisodes} & Imperial Japan \\ \hline 
+7 & 44 & \parbox[t]{2cm}{pop \\ songs \\ album \\ chart \\ rock} & \parbox[t]{5cm}{popmusic \\ teenpop \\ britishpopmusic \\ talkinginyoursleepcrystalgaylesong \\ blahblahblahalbum} & Pop Music \\ \hline 
+8 & 27 & \parbox[t]{2cm}{investigation \\ money \\ system \\ june \\ doctor} & \parbox[t]{5cm}{digitalmonetarytrust \\ andyhayman \\ martensvillesatanicsexscandal \\ johnlittlechild \\ unitedstatesvlibby} & Crime \\ \hline 
+9 & 22 & \parbox[t]{2cm}{mars \\ crater \\ astronomical \\ expedition \\ planets} & \parbox[t]{5cm}{hostagefilm \\ marsrapper \\ entomopter \\ mars2 \\ carbonatesonmars} & Mars \\ \hline 
  
 \end{tabular}
 \end{center}
